@@ -1,0 +1,44 @@
+{
+  "name": "dify-connector",
+  "version": "1.0.0",
+  "description": "A Node.js connector for Dify AI platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit",
+    "prebuild": "pnpm run clean",
+    "test-connector": "node dist/test-connector.js",
+    "test-streaming": "node dist/test-streaming.js",
+    "test-node-streaming": "node dist/test-node-streaming.js",
+    "test-all": "node dist/test-all-functions.js",
+    "test-file-upload": "node dist/test-file-upload.js",
+    "test-workflow": "node dist/test-workflow.js",
+    "test-actual": "node dist/test-actual-functionality.js",
+    "example": "node dist/example.js"
+  },
+  "keywords": [
+    "dify",
+    "ai",
+    "connector",
+    "api"
+  ],
+  "author": "evanfang",
+  "license": "MIT",
+  "dependencies": {
+    "@microsoft/fetch-event-source": "^2.0.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.0",
+    "eventsource": "^4.0.0",
+    "form-data": "^4.0.4",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
