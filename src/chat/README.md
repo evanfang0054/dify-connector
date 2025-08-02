@@ -1,6 +1,6 @@
 # 对话消息模块
 
-对话消息模块提供了向Dify API发送对话消息的功能，支持流式和阻塞两种响应模式。
+对话消息模块提供了向Dify API发送对话消息的功能，支持流式和阻塞两种响应模式，包含浏览器和Node.js环境的不同实现。
 
 ## 功能
 
@@ -8,6 +8,8 @@
 - 支持流式和阻塞两种响应模式
 - 完整的错误处理和类型安全
 - 支持文件上传和会话管理
+- 浏览器和Node.js环境兼容
+- 修复了Authorization头部配置问题
 
 ## 安装
 
@@ -66,6 +68,21 @@ await sendStreamingMessage({
   user: 'user-identifier'
 }, (event) => {
   console.log('Stream event:', event);
+});
+```
+
+### 发送对话消息（Node.js流式模式）
+
+Node.js环境下使用专用的流式处理函数，避免浏览器兼容性问题：
+
+```typescript
+import { sendStreamingMessageNode } from './chat/chat-node-stream';
+
+await sendStreamingMessageNode({
+  query: '你好，世界！',
+  user: 'user-identifier'
+}, (event) => {
+  console.log('Node.js stream event:', event);
 });
 ```
 
@@ -191,6 +208,26 @@ try {
 }
 ```
 
+### `sendStreamingMessageNode(options, onMessage)`
+
+Node.js环境下的对话消息流式处理函数，使用原生Node.js流式处理，避免浏览器兼容性问题。
+
+#### 参数
+
+- `options` (Omit<ChatRequest, 'response_mode'>): 对话消息选项（不包含response_mode）
+- `onMessage` ((event: ChatStreamEvent) => void): 接收流事件的回调函数
+
+#### 返回值
+
+返回一个Promise，在流式处理完成时解析。
+
+#### 特点
+
+- 使用Node.js原生流式处理
+- 避免fetchEventSource的浏览器兼容性问题
+- 支持完整的SSE事件处理
+- 自动处理流结束和错误情况
+
 #### 异常
 
 当API调用失败时，会抛出 `ChatMessageError` 异常，包含以下属性：
@@ -210,6 +247,10 @@ try {
 
 基于SSE（Server-Sent Events）实时返回响应，适用于需要实时显示回答的场景。
 
+### Node.js流式模式
+
+Node.js环境下使用原生流式处理，解决了fetchEventSource在Node.js环境中的兼容性问题，提供更稳定的流式处理体验。
+
 ## 错误码
 
 常见的错误码包括：
@@ -217,3 +258,20 @@ try {
 - `400`: 请求参数错误
 - `404`: 对话不存在
 - `500`: 服务内部异常
+
+## 修复记录
+
+### v1.0.0 修复内容
+
+1. **Authorization头部配置问题**
+   - 修复了`client.defaults.headers.common['Authorization']`返回undefined的问题
+   - 改为直接使用`getConfig().apiKey`获取API密钥
+
+2. **Node.js环境兼容性**
+   - 新增`sendStreamingMessageNode`函数，专门用于Node.js环境
+   - 解决了fetchEventSource在Node.js环境中的兼容性问题
+   - 使用原生Node.js流式处理，提供更稳定的体验
+
+3. **类型安全改进**
+   - 完善了TypeScript类型定义
+   - 增强了错误处理机制

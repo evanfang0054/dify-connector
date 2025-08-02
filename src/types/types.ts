@@ -236,10 +236,12 @@ export type WorkflowResponse = z.infer<typeof WorkflowResponseSchema>;
 
 /**
  * 工作流流事件类型（流式模式）
+ * 基于Dify API的SSE流式数据格式
  */
 export const WorkflowStreamEventSchema = z.object({
-  event: z.enum(['workflow_started', 'node_started', 'node_finished', 'workflow_finished', 'error']),
+  event: z.enum(['workflow_started', 'node_started', 'node_finished', 'workflow_finished', 'workflow_failed', 'error', 'agent_log']),
   workflow_run_id: z.string().uuid().optional(),
+  task_id: z.string().uuid().optional(),
   data: WorkflowFinishedDataSchema.optional(),
 });
 

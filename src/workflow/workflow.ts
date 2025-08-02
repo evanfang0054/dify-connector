@@ -1,4 +1,5 @@
 import { getClient } from '../client';
+import { getConfig } from '../config';
 import { WorkflowRequest, WorkflowResponse, WorkflowStreamEvent } from '../types';
 import { WorkflowError } from '../error';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
@@ -33,7 +34,7 @@ export async function executeWorkflow(options: WorkflowRequest): Promise<Workflo
         await fetchEventSource(url, {
           method: 'POST',
           headers: {
-            'Authorization': client.defaults.headers.common['Authorization'] as string,
+            'Authorization': `Bearer ${getConfig().apiKey}`,
             'Content-Type': 'application/json',
           },
           body,

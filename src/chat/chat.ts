@@ -1,4 +1,5 @@
 import { getClient } from '../client';
+import { getConfig } from '../config';
 import { ChatRequest, ChatResponse, ChatStreamEvent } from '../types';
 import { ChatMessageError } from '../error';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
@@ -33,7 +34,7 @@ export async function sendMessage(options: ChatRequest): Promise<ChatResponse | 
         await fetchEventSource(url, {
           method: 'POST',
           headers: {
-            'Authorization': client.defaults.headers.common['Authorization'] as string,
+            'Authorization': `Bearer ${getConfig().apiKey}`,
             'Content-Type': 'application/json',
           },
           body,

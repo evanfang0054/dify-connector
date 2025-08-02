@@ -155,7 +155,7 @@ try {
 ## 构建
 
 ```bash
-npm run build
+pnpm build
 ```
 
 ## 测试

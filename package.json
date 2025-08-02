@@ -15,6 +15,7 @@
     "test-all": "node dist/test-all-functions.js",
     "test-file-upload": "node dist/test-file-upload.js",
     "test-workflow": "node dist/test-workflow.js",
+    "test-workflow-node-stream": "node dist/test-workflow-node-stream.js",
     "test-actual": "node dist/test-actual-functionality.js",
     "example": "node dist/example.js"
   },

@@ -31,10 +31,6 @@ export async function sendStreamingMessageNode(
         inputs: options.inputs || {}
       },
       responseType: 'stream' as const,
-      headers: {
-        'Authorization': client.defaults.headers.common['Authorization'],
-        'Content-Type': 'application/json',
-      },
     };
     
     // 发送流式请求

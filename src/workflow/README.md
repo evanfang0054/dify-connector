@@ -1,6 +1,6 @@
 # 工作流执行模块
 
-工作流执行模块提供了执行Dify工作流的功能，支持流式和阻塞两种响应模式。
+工作流执行模块提供了执行Dify工作流的功能，支持流式和阻塞两种响应模式，包含浏览器和Node.js环境的不同实现。
 
 ## 功能
 
@@ -8,6 +8,8 @@
 - 支持流式和阻塞两种响应模式
 - 完整的错误处理和类型安全
 - 支持文件上传和复杂输入
+- 浏览器和Node.js环境兼容
+- 修复了Authorization头部配置问题
 
 ## 安装
 
@@ -74,6 +76,23 @@ await executeStreamingWorkflow({
   user: 'user-identifier'
 }, (event) => {
   console.log('Stream event:', event);
+});
+```
+
+### 执行工作流（Node.js流式模式）
+
+Node.js环境下使用专用的流式处理函数，避免浏览器兼容性问题：
+
+```typescript
+import { sendStreamingWorkflowNode } from './workflow/workflow-node-stream';
+
+await sendStreamingWorkflowNode({
+  inputs: {
+    query: '处理这段文本'
+  },
+  user: 'user-identifier'
+}, (event) => {
+  console.log('Node.js stream event:', event);
 });
 ```
 
@@ -177,6 +196,36 @@ try {
 }
 ```
 
+### `sendStreamingWorkflowNode(options, onEvent)`
+
+Node.js环境下的工作流流式处理函数，使用原生Node.js流式处理，避免浏览器兼容性问题。
+
+#### 参数
+
+- `options` (Omit<WorkflowRequest, 'response_mode'>): 工作流执行选项（不包含response_mode）
+- `onEvent` ((event: WorkflowStreamEvent) => void): 接收流事件的回调函数
+
+#### 返回值
+
+返回一个Promise，在流式处理完成时解析。
+
+#### 特点
+
+- 使用Node.js原生流式处理
+- 避免fetchEventSource的浏览器兼容性问题
+- 支持完整的SSE事件处理
+- 自动处理流结束和错误情况
+- 支持工作流节点级别的事件监控
+
+#### 支持的事件类型
+
+- `workflow_started`: 工作流开始执行
+- `workflow_finished`: 工作流执行完成
+- `workflow_failed`: 工作流执行失败
+- `node_started`: 节点开始执行
+- `node_finished`: 节点执行完成
+- `agent_log`: Agent日志事件
+
 #### 异常
 
 当API调用失败时，会抛出 `WorkflowError` 异常，包含以下属性：
@@ -196,9 +245,37 @@ try {
 
 基于SSE（Server-Sent Events）实时返回响应，适用于需要实时监控工作流执行进度的场景。
 
+### Node.js流式模式
+
+Node.js环境下使用原生流式处理，解决了fetchEventSource在Node.js环境中的兼容性问题，提供更稳定的工作流流式处理体验，支持详细的节点级别事件监控。
+
 ## 错误码
 
 常见的错误码包括：
 
 - `400`: 请求参数错误
 - `500`: 服务内部异常
+
+## 修复记录
+
+### v1.0.0 修复内容
+
+1. **Authorization头部配置问题**
+   - 修复了`client.defaults.headers.common['Authorization']`返回undefined的问题
+   - 改为直接使用`getConfig().apiKey`获取API密钥
+
+2. **Node.js环境兼容性**
+   - 新增`sendStreamingWorkflowNode`函数，专门用于Node.js环境
+   - 解决了fetchEventSource在Node.js环境中的兼容性问题
+   - 使用原生Node.js流式处理，提供更稳定的体验
+   - 支持详细的工作流节点级别事件监控
+
+3. **类型安全改进**
+   - 完善了TypeScript类型定义
+   - 增强了错误处理机制
+   - 添加了完整的事件类型支持
+
+4. **测试功能完善**
+   - 实现了实际的功能测试用例
+   - 添加了Node.js流式处理的专用测试
+   - 提供了完整的错误处理示例
