@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, type AxiosError } from 'axios';
-import { getConfig, type DifyConfig } from '../config';
+import { getConfig, getOrCreateConfig, type DifyConfig } from '../config';
 
 /**
  * Create an Axios instance with default configuration for Dify API
@@ -44,9 +44,10 @@ export function createClient(config: DifyConfig): AxiosInstance {
 
 /**
  * Get a configured Axios instance for Dify API
+ * @param config Optional configuration object
  * @returns Configured Axios instance
  */
-export function getClient(): AxiosInstance {
-  const config = getConfig();
-  return createClient(config);
+export function getClient(config?: Partial<DifyConfig>): AxiosInstance {
+  const difyConfig = getOrCreateConfig(config);
+  return createClient(difyConfig);
 }

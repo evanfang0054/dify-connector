@@ -1,5 +1,5 @@
 import { getClient } from '../client';
-import { getConfig } from '../config';
+import { getOrCreateConfig, type DifyConfig } from '../config';
 import { ChatRequest, ChatResponse, ChatStreamEvent } from '../types';
 import { ChatMessageError } from '../error';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
@@ -8,13 +8,18 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
  * 发送对话消息
  * 支持流式和阻塞两种模式
  * @param options 对话消息选项
+ * @param config 可选配置对象
  * @returns 对话响应或流事件处理函数
  * @throws {ChatMessageError} 当API调用失败时抛出错误
  */
-export async function sendMessage(options: ChatRequest): Promise<ChatResponse | ((onMessage: (event: ChatStreamEvent) => void) => Promise<void>)> {
+export async function sendMessage(
+  options: ChatRequest, 
+  config?: Partial<DifyConfig>
+): Promise<ChatResponse | ((onMessage: (event: ChatStreamEvent) => void) => Promise<void>)> {
   try {
     // 获取配置好的客户端
-    const client = getClient();
+    const client = getClient(config);
+    const difyConfig = getOrCreateConfig(config);
     
     // 根据响应模式选择处理方式
     if (options.response_mode === 'blocking') {
@@ -34,7 +39,7 @@ export async function sendMessage(options: ChatRequest): Promise<ChatResponse | 
         await fetchEventSource(url, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${getConfig().apiKey}`,
+            'Authorization': `Bearer ${difyConfig.apiKey}`,
             'Content-Type': 'application/json',
           },
           body,
@@ -62,30 +67,36 @@ export async function sendMessage(options: ChatRequest): Promise<ChatResponse | 
 /**
  * 发送对话消息（阻塞模式）
  * @param options 对话消息选项
+ * @param config 可选配置对象
  * @returns 对话响应
  * @throws {ChatMessageError} 当API调用失败时抛出错误
  */
-export async function sendBlockingMessage(options: Omit<ChatRequest, 'response_mode'>): Promise<ChatResponse> {
+export async function sendBlockingMessage(
+  options: Omit<ChatRequest, 'response_mode'>, 
+  config?: Partial<DifyConfig>
+): Promise<ChatResponse> {
   return sendMessage({
     ...options,
     response_mode: 'blocking'
-  }) as Promise<ChatResponse>;
+  }, config) as Promise<ChatResponse>;
 }
 
 /**
  * 发送对话消息（流式模式）
  * @param options 对话消息选项
  * @param onMessage 接收流事件的回调函数
+ * @param config 可选配置对象
  * @throws {ChatMessageError} 当API调用失败时抛出错误
  */
 export async function sendStreamingMessage(
   options: Omit<ChatRequest, 'response_mode'>,
-  onMessage: (event: ChatStreamEvent) => void
+  onMessage: (event: ChatStreamEvent) => void,
+  config?: Partial<DifyConfig>
 ): Promise<void> {
   const streamHandler = await sendMessage({
     ...options,
     response_mode: 'streaming'
-  }) as ((onMessage: (event: ChatStreamEvent) => void) => Promise<void>);
+  }, config) as ((onMessage: (event: ChatStreamEvent) => void) => Promise<void>);
   
   await streamHandler(onMessage);
 }

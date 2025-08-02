@@ -1,6 +1,6 @@
 {
   "name": "dify-connector",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Node.js connector for Dify AI platform",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

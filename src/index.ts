@@ -2,7 +2,7 @@
 // 统一导出所有模块的功能
 
 // 配置模块
-export { getConfig, type DifyConfig } from './config';
+export { getConfig, createConfig, getOrCreateConfig, type DifyConfig } from './config';
 
 // 客户端模块
 export { createClient, getClient, type AxiosInstance } from './client';

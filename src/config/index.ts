@@ -1,3 +1,3 @@
-import { getConfig, type DifyConfig } from './config';
+import { getConfig, createConfig, getOrCreateConfig, type DifyConfig } from './config';
 
-export { getConfig, DifyConfig };
+export { getConfig, createConfig, getOrCreateConfig, DifyConfig };

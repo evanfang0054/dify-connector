@@ -27,3 +27,26 @@ export function getConfig(): DifyConfig {
   // Validate and return the configuration
   return DifyConfigSchema.parse(config);
 }
+
+/**
+ * Create a Dify configuration from provided values
+ * @param config Configuration object
+ * @returns The validated Dify configuration
+ * @throws {z.ZodError} If the configuration is invalid
+ */
+export function createConfig(config: Partial<DifyConfig>): DifyConfig {
+  return DifyConfigSchema.parse(config);
+}
+
+/**
+ * Get or create Dify configuration
+ * @param config Optional configuration object
+ * @returns The validated Dify configuration
+ * @throws {z.ZodError} If the configuration is invalid
+ */
+export function getOrCreateConfig(config?: Partial<DifyConfig>): DifyConfig {
+  if (config) {
+    return createConfig(config);
+  }
+  return getConfig();
+}

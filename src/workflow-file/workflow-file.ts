@@ -1,4 +1,5 @@
 import { getClient } from '../client';
+import { type DifyConfig } from '../config';
 import { WorkflowFileUploadResponse } from '../types';
 import { FileUploadError } from '../error';
 import { isBuffer, isReadableStream, isFile } from '../utils';
@@ -7,17 +8,21 @@ import FormData from 'form-data';
 /**
  * 上传文件用于工作流
  * @param options 文件上传选项
+ * @param config 可选配置对象
  * @returns 上传文件的响应信息
  * @throws {FileUploadError} 当API调用失败时抛出错误
  */
-export async function uploadWorkflowFile(options: {
-  file: Buffer | ReadableStream | File;
-  filename: string;
-  user: string;
-}): Promise<WorkflowFileUploadResponse> {
+export async function uploadWorkflowFile(
+  options: {
+    file: Buffer | ReadableStream | File;
+    filename: string;
+    user: string;
+  },
+  config?: Partial<DifyConfig>
+): Promise<WorkflowFileUploadResponse> {
   try {
     // 获取配置好的客户端
-    const client = getClient();
+    const client = getClient(config);
     
     // 创建FormData
     const formData = new FormData();

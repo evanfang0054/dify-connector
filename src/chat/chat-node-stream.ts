@@ -2,6 +2,7 @@
 // 使用TransformStream处理SSE流
 
 import { getClient } from '../client';
+import { type DifyConfig } from '../config';
 import { ChatRequest } from '../types';
 import { ChatMessageError } from '../error';
 import axios, { AxiosResponse } from 'axios';
@@ -11,18 +12,20 @@ import axios, { AxiosResponse } from 'axios';
  * 使用TransformStream处理SSE流
  * @param options 对话消息选项
  * @param onMessage 接收流事件的回调函数
+ * @param config 可选配置对象
  * @throws {ChatMessageError} 当API调用失败时抛出错误
  */
 export async function sendStreamingMessageNode(
   options: Omit<ChatRequest, 'response_mode'>,
-  onMessage: (event: any) => void
+  onMessage: (event: any) => void,
+  config?: Partial<DifyConfig>
 ): Promise<void> {
   try {
     // 获取配置好的客户端
-    const client = getClient();
+    const client = getClient(config);
     
     // 构建请求配置
-    const config = {
+    const requestConfig = {
       method: 'post',
       url: '/chat-messages',
       data: {
@@ -34,7 +37,7 @@ export async function sendStreamingMessageNode(
     };
     
     // 发送流式请求
-    const response: AxiosResponse = await client(config);
+    const response: AxiosResponse = await client(requestConfig);
     
     // 检查响应状态
     if (response.status >= 400) {

@@ -1,5 +1,5 @@
 import { getClient } from '../client';
-import { getConfig } from '../config';
+import { getOrCreateConfig, type DifyConfig } from '../config';
 import { WorkflowRequest, WorkflowResponse, WorkflowStreamEvent } from '../types';
 import { WorkflowError } from '../error';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
@@ -8,13 +8,18 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
  * 执行工作流
  * 支持流式和阻塞两种模式
  * @param options 工作流执行选项
+ * @param config 可选配置对象
  * @returns 工作流响应或流事件处理函数
  * @throws {WorkflowError} 当API调用失败时抛出错误
  */
-export async function executeWorkflow(options: WorkflowRequest): Promise<WorkflowResponse | ((onEvent: (event: WorkflowStreamEvent) => void) => Promise<void>)> {
+export async function executeWorkflow(
+  options: WorkflowRequest,
+  config?: Partial<DifyConfig>
+): Promise<WorkflowResponse | ((onEvent: (event: WorkflowStreamEvent) => void) => Promise<void>)> {
   try {
     // 获取配置好的客户端
-    const client = getClient();
+    const client = getClient(config);
+    const difyConfig = getOrCreateConfig(config);
     
     // 根据响应模式选择处理方式
     if (options.response_mode === 'blocking') {
@@ -34,7 +39,7 @@ export async function executeWorkflow(options: WorkflowRequest): Promise<Workflo
         await fetchEventSource(url, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${getConfig().apiKey}`,
+            'Authorization': `Bearer ${difyConfig.apiKey}`,
             'Content-Type': 'application/json',
           },
           body,
@@ -62,30 +67,36 @@ export async function executeWorkflow(options: WorkflowRequest): Promise<Workflo
 /**
  * 执行工作流（阻塞模式）
  * @param options 工作流执行选项
+ * @param config 可选配置对象
  * @returns 工作流响应
  * @throws {WorkflowError} 当API调用失败时抛出错误
  */
-export async function executeBlockingWorkflow(options: Omit<WorkflowRequest, 'response_mode'> & { response_mode?: 'blocking' }): Promise<WorkflowResponse> {
+export async function executeBlockingWorkflow(
+  options: Omit<WorkflowRequest, 'response_mode'> & { response_mode?: 'blocking' },
+  config?: Partial<DifyConfig>
+): Promise<WorkflowResponse> {
   return executeWorkflow({
     ...options,
     response_mode: 'blocking'
-  }) as Promise<WorkflowResponse>;
+  }, config) as Promise<WorkflowResponse>;
 }
 
 /**
  * 执行工作流（流式模式）
  * @param options 工作流执行选项
  * @param onEvent 接收流事件的回调函数
+ * @param config 可选配置对象
  * @throws {WorkflowError} 当API调用失败时抛出错误
  */
 export async function executeStreamingWorkflow(
   options: Omit<WorkflowRequest, 'response_mode'> & { response_mode?: 'streaming' },
-  onEvent: (event: WorkflowStreamEvent) => void
+  onEvent: (event: WorkflowStreamEvent) => void,
+  config?: Partial<DifyConfig>
 ): Promise<void> {
   const streamHandler = await executeWorkflow({
     ...options,
     response_mode: 'streaming'
-  }) as ((onEvent: (event: WorkflowStreamEvent) => void) => Promise<void>);
+  }, config) as ((onEvent: (event: WorkflowStreamEvent) => void) => Promise<void>);
   
   await streamHandler(onEvent);
 }

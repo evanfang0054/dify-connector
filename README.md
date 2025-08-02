@@ -9,7 +9,9 @@ Dify API连接器是一个基于Node.js的中间层服务，旨在简化本地�
 - **多种模式支持**: 支持阻塞和流式响应模式
 - **文件上传**: 支持聊天和工作流的文件上传功能
 - **SSE流处理**: 使用@microsoft/fetch-event-source处理服务端事件流
-- **配置管理**: 通过环境变量管理API配置
+- **配置管理**: 支持环境变量和运行时参数配置
+- **多租户支持**: 可以为不同租户使用不同的API配置
+- **向后兼容**: 完全向后兼容，现有代码无需修改
 
 ## 模块组成
 
@@ -31,12 +33,54 @@ pnpm install
 
 ## 配置
 
+### 环境变量配置（推荐方式）
+
 创建 `.env` 文件并设置以下环境变量：
 
 ```env
 API_BASE_URL=https://api.dify.ai/v1
 API_KEY=your-api-key-here
 ```
+
+### 运行时参数配置（新功能）
+
+除了环境变量，现在支持在运行时传入配置参数：
+
+```typescript
+import { sendBlockingMessage, createConfig } from './dist/index.js';
+
+// 创建配置对象
+const config = createConfig({
+  apiBaseUrl: 'https://your-dify-instance.com/v1',
+  apiKey: 'your-api-key'
+});
+
+// 使用配置参数
+const response = await sendBlockingMessage({
+  query: '你好，世界！',
+  user: 'user123'
+}, config);
+```
+
+### 混合使用
+
+可以在同一个应用中混合使用环境变量和参数配置：
+
+```typescript
+// 部分调用使用配置参数
+const response1 = await sendBlockingMessage({
+  query: '使用配置参数',
+  user: 'user123'
+}, { apiKey: 'custom-key' });
+
+// 部分调用使用环境变量
+const response2 = await sendBlockingMessage({
+  query: '使用环境变量',
+  user: 'user123'
+});
+```
+
+详细的配置参数使用示例请参考 [配置参数示例文档](./CONFIG_PARAMS_EXAMPLES.md)。
 
 ## 使用方法
 
@@ -130,6 +174,7 @@ console.log('工作流状态:', response.data.status);
 - [工作流文件上传模块](./src/workflow-file/README.md)
 - [工作流执行模块](./src/workflow/README.md)
 - [API规范文档](./docs/)
+- [配置参数功能示例](./CONFIG_PARAMS_EXAMPLES.md)
 
 ## 错误处理
 

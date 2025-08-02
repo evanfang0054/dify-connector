@@ -2,6 +2,7 @@
 // 基于Dify API规范的SSE流式数据处理
 
 import { getClient } from '../client';
+import { type DifyConfig } from '../config';
 import { WorkflowRequest, WorkflowStreamEvent } from '../types';
 import { WorkflowError } from '../error';
 import { AxiosResponse } from 'axios';
@@ -11,18 +12,20 @@ import { AxiosResponse } from 'axios';
  * 基于Dify API的SSE流式数据格式规范
  * @param options 工作流执行选项
  * @param onEvent 接收流事件的回调函数
+ * @param config 可选配置对象
  * @throws {WorkflowError} 当API调用失败时抛出错误
  */
 export async function sendStreamingWorkflowNode(
   options: Omit<WorkflowRequest, 'response_mode'>,
-  onEvent: (event: WorkflowStreamEvent) => void
+  onEvent: (event: WorkflowStreamEvent) => void,
+  config?: Partial<DifyConfig>
 ): Promise<void> {
   try {
     // 获取配置好的客户端
-    const client = getClient();
+    const client = getClient(config);
     
     // 构建请求配置，严格按照Dify API规范
-    const config = {
+    const requestConfig = {
       method: 'post',
       url: '/workflows/run',
       data: {
@@ -38,7 +41,7 @@ export async function sendStreamingWorkflowNode(
     };
     
     // 发送流式请求
-    const response: AxiosResponse = await client(config);
+    const response: AxiosResponse = await client(requestConfig);
     
     // 检查响应状态
     if (response.status >= 400) {
