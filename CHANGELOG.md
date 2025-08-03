@@ -2,7 +2,132 @@
 
 本文档记录了 Dify 连接器的所有重要变更。
 
-## [1.1.0] - 2024-08-02
+## [1.2.0] - 2025-08-03
+
+### 新增功能
+
+#### 🧠 知识库管理模块
+新增完整的知识库管理功能，包含7个专门模块：
+
+**数据集管理 (`dataset-management/`):**
+- `createDataset()` - 创建数据集
+- `getDatasets()` - 获取数据集列表
+- `getDataset()` - 获取单个数据集详情
+- `updateDataset()` - 更新数据集
+- `deleteDataset()` - 删除数据集
+
+**文档管理 (`document-management/`):**
+- `createDocument()` - 创建文档
+- `uploadDocument()` - 上传文档
+- `getDocuments()` - 获取文档列表
+- `getDocument()` - 获取单个文档详情
+- `updateDocument()` - 更新文档
+- `deleteDocument()` - 删除文档
+
+**段落管理 (`segment-management/`):**
+- `createSegment()` - 创建文本段
+- `getSegments()` - 获取文本段列表
+- `getSegment()` - 获取单个文本段详情
+- `updateSegment()` - 更新文本段
+- `deleteSegment()` - 删除文本段
+
+**子块管理 (`child-chunk-management/`):**
+- `createChildChunk()` - 创建子块
+- `getChildChunks()` - 获取子块列表
+- `getChildChunk()` - 获取单个子块详情
+- `updateChildChunk()` - 更新子块
+- `deleteChildChunk()` - 删除子块
+- `createChildChunksBatch()` - 批量创建子块
+- `deleteChildChunksBatch()` - 批量删除子块
+
+**元数据管理 (`metadata-management/`):**
+- `addDocumentMetadata()` - 为文档添加元数据
+- `addSegmentMetadata()` - 为文本段添加元数据
+- `getDocumentMetadata()` - 获取文档元数据
+- `getSegmentMetadata()` - 获取文本段元数据
+- `updateDocumentMetadata()` - 更新文档元数据
+- `updateSegmentMetadata()` - 更新文本段元数据
+- `deleteDocumentMetadata()` - 删除文档元数据
+- `deleteSegmentMetadata()` - 删除文本段元数据
+- `addDocumentMetadataBatch()` - 批量添加文档元数据
+- `addSegmentMetadataBatch()` - 批量添加文本段元数据
+
+**数据集检索 (`dataset-retrieval/`):**
+- `retrieveFromDataset()` - 基础检索
+- `hybridSearch()` - 混合搜索
+- `advancedRetrieval()` - 高级检索
+
+**知识标签管理 (`knowledge-tags-management/`):**
+- `createKnowledgeTag()` - 创建知识标签
+- `getKnowledgeTags()` - 获取知识标签列表
+- `addTagToDocument()` - 为文档添加标签
+
+#### 🔧 新增错误类型
+- `DatasetError` - 数据集相关错误
+- `DocumentError` - 文档相关错误
+- `SegmentError` - 文本段相关错误
+- `ChildChunkError` - 子块相关错误
+- `MetadataError` - 元数据相关错误
+- `KnowledgeTagError` - 知识标签相关错误
+
+#### 📚 新增类型定义
+- 完整的知识库管理相关类型定义
+- 严格的 Zod 模式验证
+- 支持 TypeScript 类型检查
+
+#### 🧪 测试功能
+- 新增 `test-knowledge-base` 测试脚本
+- 完整的知识库管理模块测试覆盖
+
+### 改进
+
+#### 🔄 架构优化
+- 采用7层模块化架构设计
+- 每个模块都有独立的职责和清晰的接口
+- 统一的错误处理和类型验证
+
+#### 📦 包管理
+- 更新 package.json 版本至 1.2.0
+- 添加新的测试脚本
+
+### 使用示例
+
+```typescript
+// 创建数据集
+const dataset = await createDataset({
+  name: '我的知识库',
+  description: '用于测试的知识库',
+  provider: 'vendor',
+  permission: 'only_me',
+  data_source_type: 'upload_file'
+});
+
+// 上传文档
+const document = await uploadDocument({
+  dataset_id: dataset.id,
+  file: fileBuffer,
+  filename: 'document.pdf',
+  original_file_name: '原始文档.pdf'
+});
+
+// 创建文本段
+const segment = await createSegment({
+  dataset_id: dataset.id,
+  document_id: document.id,
+  content: '这是一段测试文本',
+  keywords: ['测试', '文本']
+});
+
+// 检索内容
+const results = await retrieveFromDataset({
+  query: '测试查询',
+  dataset_id: dataset.id,
+  top_k: 4,
+  retrieve_strategy: 'semantic_search'
+});
+```
+
+## [1.1.0] - 2025-08-02
 
 ### 新增功能
 
@@ -61,7 +186,7 @@ const response = await sendBlockingMessage({
 }, config);
 ```
 
-## [1.0.0] - 2024-07-25
+## [1.0.0] - 2025-08-01
 
 ### 初始版本
 

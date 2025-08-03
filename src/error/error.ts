@@ -113,3 +113,69 @@ export class WorkflowError extends DifyAPIError {
     this.name = 'WorkflowError';
   }
 }
+
+/**
+ * 知识库管理错误类
+ * 专门处理知识库管理相关的错误
+ */
+export class DatasetError extends DifyAPIError {
+  constructor(error: any) {
+    super(error);
+    this.name = 'DatasetError';
+  }
+}
+
+/**
+ * 文档管理错误类
+ * 专门处理文档管理相关的错误
+ */
+export class DocumentError extends DifyAPIError {
+  constructor(error: any) {
+    super(error);
+    this.name = 'DocumentError';
+  }
+}
+
+/**
+ * 文本段管理错误类
+ * 专门处理文本段管理相关的错误
+ */
+export class SegmentError extends DifyAPIError {
+  constructor(error: any) {
+    super(error);
+    this.name = 'SegmentError';
+  }
+}
+
+/**
+ * 子块管理错误类
+ * 专门处理子块管理相关的错误
+ */
+export class ChildChunkError extends DifyAPIError {
+  constructor(error: any) {
+    super(error);
+    this.name = 'ChildChunkError';
+  }
+}
+
+/**
+ * 元数据管理错误类
+ * 专门处理元数据管理相关的错误
+ */
+export class MetadataError extends DifyAPIError {
+  constructor(error: any) {
+    super(error);
+    this.name = 'MetadataError';
+  }
+}
+
+/**
+ * 知识库标签管理错误类
+ * 专门处理知识库标签管理相关的错误
+ */
+export class KnowledgeTagError extends DifyAPIError {
+  constructor(error: any) {
+    super(error);
+    this.name = 'KnowledgeTagError';
+  }
+}

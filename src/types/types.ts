@@ -293,3 +293,196 @@ export const ResponseMode = {
 } as const;
 
 export type ResponseMode = typeof ResponseMode[keyof typeof ResponseMode];
+
+// ████████   知识库相关类型   ████████
+
+/**
+ * 知识库文档对象类型
+ */
+export const DocumentObjectSchema = z.object({
+  id: z.string().uuid(),
+  position: z.number().int(),
+  dataset_id: z.string().uuid(),
+  dataset_name: z.string(),
+  document_id: z.string().uuid(),
+  document_name: z.string(),
+  segment_id: z.string().uuid(),
+  score: z.number(),
+  content: z.string(),
+});
+
+export type DocumentObject = z.infer<typeof DocumentObjectSchema>;
+
+/**
+ * 知识库检索请求类型
+ */
+export const DatasetRetrievalRequestSchema = z.object({
+  query: z.string().min(1, '查询内容不能为空'),
+  dataset_id: z.string().uuid(),
+  top_k: z.number().int().min(1).max(100).default(4),
+  score_threshold: z.number().min(0).max(1).optional(),
+  retrieve_strategy: z.enum(['semantic_search', 'full_text_search', 'hybrid_search']).default('semantic_search'),
+});
+
+export type DatasetRetrievalRequest = z.infer<typeof DatasetRetrievalRequestSchema>;
+
+/**
+ * 知识库检索响应类型
+ */
+export const DatasetRetrievalResponseSchema = z.object({
+  query: z.string(),
+  documents: z.array(DocumentObjectSchema),
+  total_tokens: z.number().int().optional(),
+});
+
+export type DatasetRetrievalResponse = z.infer<typeof DatasetRetrievalResponseSchema>;
+
+/**
+ * 知识库数据集对象类型
+ */
+export const DatasetObjectSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  description: z.string().optional(),
+  provider: z.string(),
+  permission: z.string(),
+  data_source_type: z.string(),
+  created_by: z.string().uuid(),
+  created_at: z.number().int(),
+  updated_at: z.number().int(),
+  indexing_technique: z.string().optional(),
+});
+
+export type DatasetObject = z.infer<typeof DatasetObjectSchema>;
+
+/**
+ * 创建数据集请求类型
+ */
+export const CreateDatasetRequestSchema = z.object({
+  name: z.string().min(1, '数据集名称不能为空'),
+  description: z.string().optional(),
+  provider: z.string().default('vendor'),
+  permission: z.string().default('only_me'),
+  data_source_type: z.string().default('upload_file'),
+  indexing_technique: z.string().optional(),
+});
+
+export type CreateDatasetRequest = z.infer<typeof CreateDatasetRequestSchema>;
+
+/**
+ * 文档对象类型
+ */
+export const DatasetDocumentObjectSchema = z.object({
+  id: z.string().uuid(),
+  position: z.number().int(),
+  dataset_id: z.string().uuid(),
+  dataset_name: z.string(),
+  document_id: z.string().uuid(),
+  document_name: z.string(),
+  segment_id: z.string().uuid(),
+  score: z.number(),
+  content: z.string(),
+  word_count: z.number().int().optional(),
+  tokens: z.number().int().optional(),
+  keyword_list: z.array(z.string()).optional(),
+  hit_count: z.number().int().optional(),
+  created_at: z.number().int().optional(),
+  updated_at: z.number().int().optional(),
+});
+
+export type DatasetDocumentObject = z.infer<typeof DatasetDocumentObjectSchema>;
+
+/**
+ * 创建文档请求类型
+ */
+export const CreateDocumentRequestSchema = z.object({
+  dataset_id: z.string().uuid(),
+  name: z.string().min(1, '文档名称不能为空'),
+  description: z.string().optional(),
+  original_document_id: z.string().uuid().optional(),
+  indexing_technique: z.string().default('high_quality'),
+  process_rule: z.object({
+    mode: z.enum(['automatic', 'custom']),
+    rules: z.object({
+      chunk_size: z.number().int().optional(),
+      chunk_overlap: z.number().int().optional(),
+      separators: z.array(z.string()).optional(),
+    }).optional(),
+  }).optional(),
+});
+
+export type CreateDocumentRequest = z.infer<typeof CreateDocumentRequestSchema>;
+
+/**
+ * 文本段对象类型
+ */
+export const DocumentSegmentObjectSchema = z.object({
+  id: z.string().uuid(),
+  position: z.number().int(),
+  dataset_id: z.string().uuid(),
+  dataset_name: z.string(),
+  document_id: z.string().uuid(),
+  document_name: z.string(),
+  content: z.string(),
+  word_count: z.number().int(),
+  tokens: z.number().int(),
+  keyword_list: z.array(z.string()).optional(),
+  hit_count: z.number().int().optional(),
+  created_at: z.number().int(),
+  updated_at: z.number().int(),
+  status: z.enum(['waiting', 'indexing', 'completed', 'failed']),
+});
+
+export type DocumentSegmentObject = z.infer<typeof DocumentSegmentObjectSchema>;
+
+/**
+ * 检索设置类型
+ */
+export const RetrievalSettingsSchema = z.object({
+  search_method: z.enum(['semantic_search', 'full_text_search', 'hybrid_search']),
+  reranking_enable: z.boolean(),
+  reranking_model: z.object({
+    reranking_provider_name: z.string(),
+    reranking_model_name: z.string(),
+  }).optional(),
+  top_k: z.number().int(),
+  score_threshold: z.number().optional(),
+});
+
+export type RetrievalSettings = z.infer<typeof RetrievalSettingsSchema>;
+
+/**
+ * 元数据类型
+ */
+export const MetadataSchema = z.object({
+  key: z.string().min(1, '元数据键不能为空'),
+  value: z.string(),
+  type: z.enum(['string', 'number', 'boolean', 'array', 'object']).default('string'),
+});
+
+export type Metadata = z.infer<typeof MetadataSchema>;
+
+/**
+ * 知识库标签对象类型
+ */
+export const KnowledgeTagObjectSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  description: z.string().optional(),
+  color: z.string().optional(),
+  created_at: z.number().int(),
+  updated_at: z.number().int(),
+});
+
+export type KnowledgeTagObject = z.infer<typeof KnowledgeTagObjectSchema>;
+
+/**
+ * 创建知识库标签请求类型
+ */
+export const CreateKnowledgeTagRequestSchema = z.object({
+  name: z.string().min(1, '标签名称不能为空'),
+  description: z.string().optional(),
+  color: z.string().optional(),
+});
+
+export type CreateKnowledgeTagRequest = z.infer<typeof CreateKnowledgeTagRequestSchema>;

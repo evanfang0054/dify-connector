@@ -1,0 +1,17 @@
+export {
+  createKnowledgeTag,
+  getKnowledgeTags,
+  getKnowledgeTag,
+  updateKnowledgeTag,
+  deleteKnowledgeTag,
+  addTagToDocument,
+  addTagToSegment,
+  removeTagFromDocument,
+  removeTagFromSegment,
+  getDocumentTags,
+  getSegmentTags,
+  addTagsToDocumentBatch,
+  addTagsToSegmentBatch,
+  searchDocumentsByTags,
+  searchSegmentsByTags,
+} from './knowledge-tags-management';

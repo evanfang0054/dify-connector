@@ -23,8 +23,106 @@ export type { ChatRequest, ChatResponse, ChatStreamEvent } from './chat';
 export { executeWorkflow, executeBlockingWorkflow, executeStreamingWorkflow } from './workflow';
 export type { WorkflowRequest, WorkflowResponse, WorkflowStreamEvent } from './workflow';
 
+// 知识库管理模块
+export {
+  createDataset,
+  getDatasets,
+  getDataset,
+  updateDataset,
+  deleteDataset,
+} from './dataset-management';
+
+export {
+  createDocument,
+  uploadDocument,
+  getDocuments,
+  getDocument,
+  updateDocument,
+  deleteDocument,
+  getDocumentSegments,
+} from './document-management';
+
+export {
+  createSegment,
+  getSegments,
+  getSegment,
+  updateSegment,
+  deleteSegment,
+  createSegmentsBatch,
+  deleteSegmentsBatch,
+  enableSegment,
+  disableSegment,
+} from './segment-management';
+
+export {
+  createChildChunk,
+  getChildChunks,
+  getChildChunk,
+  updateChildChunk,
+  deleteChildChunk,
+  createChildChunksBatch,
+  deleteChildChunksBatch,
+  enableChildChunk,
+  disableChildChunk,
+} from './child-chunk-management';
+
+export {
+  addDocumentMetadata,
+  addSegmentMetadata,
+  getDocumentMetadata,
+  getSegmentMetadata,
+  updateDocumentMetadata,
+  updateSegmentMetadata,
+  deleteDocumentMetadata,
+  deleteSegmentMetadata,
+  addDocumentMetadataBatch,
+  addSegmentMetadataBatch,
+  searchDocumentsByMetadata,
+  searchSegmentsByMetadata,
+} from './metadata-management';
+
+export {
+  retrieveFromDataset,
+  retrieveFromMultipleDatasets,
+  retrieveWithFilters,
+  hybridSearch,
+  similaritySearch,
+  getRetrievalStats,
+  getRetrievalSuggestions,
+  advancedRetrieval,
+} from './dataset-retrieval';
+
+export {
+  createKnowledgeTag,
+  getKnowledgeTags,
+  getKnowledgeTag,
+  updateKnowledgeTag,
+  deleteKnowledgeTag,
+  addTagToDocument,
+  addTagToSegment,
+  removeTagFromDocument,
+  removeTagFromSegment,
+  getDocumentTags,
+  getSegmentTags,
+  addTagsToDocumentBatch,
+  addTagsToSegmentBatch,
+  searchDocumentsByTags,
+  searchSegmentsByTags,
+} from './knowledge-tags-management';
+
 // 错误处理模块
-export { DifyAPIError, FileUploadError, ChatMessageError, WorkflowError } from './error';
+export { 
+  DifyAPIError, 
+  FileUploadError, 
+  ChatMessageError, 
+  WorkflowError,
+  DatasetError,
+  DocumentError,
+  SegmentError,
+  ChildChunkError,
+  MetadataError,
+  KnowledgeTagError,
+} from './error';
 export type { ErrorResponse } from './error';
 
 // 类型定义
@@ -59,6 +157,32 @@ export {
   WorkflowResponseSchema,
   WorkflowStreamEventSchema,
   
+  // 知识库相关类型
+  DocumentObjectSchema,
+  DocumentObject,
+  DatasetRetrievalRequestSchema,
+  DatasetRetrievalRequest,
+  DatasetRetrievalResponseSchema,
+  DatasetRetrievalResponse,
+  DatasetObjectSchema,
+  DatasetObject,
+  CreateDatasetRequestSchema,
+  CreateDatasetRequest,
+  DatasetDocumentObjectSchema,
+  DatasetDocumentObject,
+  CreateDocumentRequestSchema,
+  CreateDocumentRequest,
+  DocumentSegmentObjectSchema,
+  DocumentSegmentObject,
+  RetrievalSettingsSchema,
+  RetrievalSettings,
+  MetadataSchema,
+  Metadata,
+  KnowledgeTagObjectSchema,
+  KnowledgeTagObject,
+  CreateKnowledgeTagRequestSchema,
+  CreateKnowledgeTagRequest,
+  
   // 错误相关类型
   ErrorResponseSchema,
   
@@ -67,3 +191,9 @@ export {
   TransferMethod,
   ResponseMode,
 } from './types';
+
+// 子块管理相关类型
+export type {
+  ChildChunkObject,
+  CreateChildChunkRequest,
+} from './child-chunk-management';

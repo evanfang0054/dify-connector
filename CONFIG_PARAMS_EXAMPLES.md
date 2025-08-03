@@ -122,6 +122,58 @@ executeStreamingWorkflow(options, onEvent, config?)
 sendStreamingWorkflowNode(options, onEvent, config?)
 ```
 
+### 知识库管理模块 (v1.2.0+)
+```typescript
+// 数据集管理
+createDataset(options, config?)
+getDatasets(config?)
+getDataset(datasetId, config?)
+updateDataset(datasetId, options, config?)
+deleteDataset(datasetId, config?)
+
+// 文档管理
+createDocument(options, config?)
+uploadDocument(options, config?)
+getDocuments(datasetId, config?)
+getDocument(documentId, config?)
+updateDocument(documentId, options, config?)
+deleteDocument(documentId, config?)
+
+// 段落管理
+createSegment(options, config?)
+getSegments(datasetId, config?)
+getSegment(segmentId, config?)
+updateSegment(segmentId, options, config?)
+deleteSegment(segmentId, config?)
+
+// 子块管理
+createChildChunk(options, config?)
+getChildChunks(segmentId, config?)
+getChildChunk(childChunkId, config?)
+updateChildChunk(childChunkId, options, config?)
+deleteChildChunk(childChunkId, config?)
+
+// 元数据管理
+addDocumentMetadata(options, config?)
+addSegmentMetadata(options, config?)
+getDocumentMetadata(documentId, config?)
+getSegmentMetadata(segmentId, config?)
+updateDocumentMetadata(options, config?)
+updateSegmentMetadata(options, config?)
+deleteDocumentMetadata(options, config?)
+deleteSegmentMetadata(options, config?)
+
+// 数据集检索
+retrieveFromDataset(options, config?)
+hybridSearch(options, config?)
+advancedRetrieval(options, config?)
+
+// 知识标签管理
+createKnowledgeTag(options, config?)
+getKnowledgeTags(config?)
+addTagToDocument(options, config?)
+```
+
 ## 配置工具函数
 
 ### 创建配置
@@ -426,6 +478,176 @@ class FailoverService {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
+```
+
+### 6. 知识库管理多实例配置 (v1.2.0+)
+```typescript
+// 知识库多实例配置
+const knowledgeBaseConfigs = {
+  // 产品文档知识库
+  product_docs: {
+    apiBaseUrl: 'https://product-docs.dify.ai/v1',
+    apiKey: 'product-docs-key',
+    datasetId: 'product-dataset-id'
+  },
+  // 技术支持知识库
+  support_docs: {
+    apiBaseUrl: 'https://support-docs.dify.ai/v1',
+    apiKey: 'support-docs-key',
+    datasetId: 'support-dataset-id'
+  },
+  // 培训材料知识库
+  training_docs: {
+    apiBaseUrl: 'https://training-docs.dify.ai/v1',
+    apiKey: 'training-docs-key',
+    datasetId: 'training-dataset-id'
+  }
+};
+
+// 知识库管理服务
+class KnowledgeBaseService {
+  private configs = knowledgeBaseConfigs;
+  
+  // 在指定的知识库中检索信息
+  async searchKnowledgeBase(
+    baseType: keyof typeof knowledgeBaseConfigs,
+    query: string,
+    options: {
+      top_k?: number;
+      retrieve_strategy?: string;
+      score_threshold?: number;
+    } = {}
+  ) {
+    const config = this.configs[baseType];
+    if (!config) {
+      throw new Error(`未找到知识库配置: ${baseType}`);
+    }
+    
+    console.log(`在 ${baseType} 知识库中搜索: ${query}`);
+    
+    return await retrieveFromDataset({
+      query,
+      dataset_id: config.datasetId,
+      top_k: options.top_k || 5,
+      retrieve_strategy: options.retrieve_strategy || 'semantic_search',
+      score_threshold: options.score_threshold || 0.5
+    }, config);
+  }
+  
+  // 上传文档到指定知识库
+  async uploadToKnowledgeBase(
+    baseType: keyof typeof knowledgeBaseConfigs,
+    file: Buffer,
+    filename: string,
+    options: {
+      original_file_name?: string;
+      description?: string;
+    } = {}
+  ) {
+    const config = this.configs[baseType];
+    if (!config) {
+      throw new Error(`未找到知识库配置: ${baseType}`);
+    }
+    
+    console.log(`上传文档到 ${baseType} 知识库: ${filename}`);
+    
+    return await uploadDocument({
+      dataset_id: config.datasetId,
+      file,
+      filename,
+      original_file_name: options.original_file_name || filename,
+      description: options.description || ''
+    }, config);
+  }
+  
+  // 创建跨知识库的混合搜索
+  async hybridSearchAcrossBases(
+    query: string,
+    baseTypes: Array<keyof typeof knowledgeBaseConfigs> = ['product_docs', 'support_docs'],
+    options: {
+      top_k?: number;
+      semantic_weight?: number;
+      fulltext_weight?: number;
+    } = {}
+  ) {
+    const promises = baseTypes.map(async (baseType) => {
+      const config = this.configs[baseType];
+      if (!config) return null;
+      
+      try {
+        return await hybridSearch({
+          query,
+          dataset_id: config.datasetId,
+          top_k: options.top_k || 3,
+          semantic_weight: options.semantic_weight || 0.6,
+          fulltext_weight: options.fulltext_weight || 0.4
+        }, config);
+      } catch (error) {
+        console.error(`${baseType} 知识库搜索失败:`, error);
+        return null;
+      }
+    });
+    
+    const results = await Promise.all(promises);
+    return results.filter(result => result !== null);
+  }
+  
+  // 获取所有知识库的统计信息
+  async getAllKnowledgeBaseStats() {
+    const promises = Object.entries(this.configs).map(async ([baseType, config]) => {
+      try {
+        const dataset = await getDataset(config.datasetId, config);
+        return {
+          baseType,
+          name: dataset.name,
+          documentCount: dataset.document_count,
+          wordCount: dataset.word_count,
+          createdAt: dataset.created_at
+        };
+      } catch (error) {
+        console.error(`${baseType} 知识库统计获取失败:`, error);
+        return {
+          baseType,
+          error: '无法获取统计信息'
+        };
+      }
+    });
+    
+    return await Promise.all(promises);
+  }
+}
+
+// 使用示例
+const kbService = new KnowledgeBaseService();
+
+// 在产品文档中搜索
+const productResults = await kbService.searchKnowledgeBase(
+  'product_docs',
+  '如何安装产品',
+  { top_k: 3 }
+);
+
+// 上传文档到技术支持知识库
+const uploadResult = await kbService.uploadToKnowledgeBase(
+  'support_docs',
+  fileBuffer,
+  'troubleshooting-guide.pdf',
+  {
+    original_file_name: '故障排除指南.pdf',
+    description: '常见问题故障排除指南'
+  }
+);
+
+// 跨知识库混合搜索
+const hybridResults = await kbService.hybridSearchAcrossBases(
+  '系统性能优化',
+  ['product_docs', 'support_docs'],
+  { top_k: 2 }
+);
+
+// 获取所有知识库统计
+const allStats = await kbService.getAllKnowledgeBaseStats();
+console.log('知识库统计:', allStats);
 ```
 
 ## 最佳实践
