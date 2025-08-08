@@ -36,6 +36,7 @@
     "test-workflow-node-stream": "tsx tests/test-workflow-node-stream.ts",
     "test-actual": "tsx tests/test-actual-functionality.ts",
     "test-knowledge-base": "tsx tests/test-knowledge-base.ts",
+    "test-config-params": "tsx tests/test-config-params.ts",
     "example": "tsx tests/example.ts"
   },
   "keywords": [
