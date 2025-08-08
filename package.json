@@ -1,30 +1,54 @@
 {
   "name": "dify-connector",
-  "version": "1.2.0",
-  "description": "A Node.js connector for Dify AI platform",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "version": "1.3.0",
+  "description": "A comprehensive Node.js connector for Dify AI platform with knowledge base management and streaming capabilities",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf dist",
+    "build": "tsx build.ts",
+    "build:dev": "tsx build.ts dev",
+    "build:types": "tsx build.ts types",
+    "build:clean": "tsx build.ts clean",
+    "build:analyze": "tsx build.ts && node -e \"console.log('ESM Bundle Analysis:'); console.log(JSON.stringify(JSON.parse(require('fs').readFileSync('./dist/esm/metafile.json', 'utf8')), null, 2)); console.log('\\nCJS Bundle Analysis:'); console.log(JSON.stringify(JSON.parse(require('fs').readFileSync('./dist/cjs/metafile.json', 'utf8')), null, 2));\"",
+    "clean": "tsx build.ts clean",
     "type-check": "tsc --noEmit",
     "prebuild": "pnpm run clean",
-    "test-connector": "node dist/test-connector.js",
-    "test-streaming": "node dist/test-streaming.js",
-    "test-node-streaming": "node dist/test-node-streaming.js",
-    "test-all": "node dist/test-all-functions.js",
-    "test-file-upload": "node dist/test-file-upload.js",
-    "test-workflow": "node dist/test-workflow.js",
-    "test-workflow-node-stream": "node dist/test-workflow-node-stream.js",
-    "test-actual": "node dist/test-actual-functionality.js",
-    "test-knowledge-base": "node dist/test-knowledge-base.js",
-    "example": "node dist/example.js"
+    "test-connector": "tsx tests/test-connector.ts",
+    "test-streaming": "tsx tests/test-streaming.ts",
+    "test-node-streaming": "tsx tests/test-node-streaming.ts",
+    "test-all": "tsx tests/test-all-functions.ts",
+    "test-file-upload": "tsx tests/test-file-upload.ts",
+    "test-workflow": "tsx tests/test-workflow.ts",
+    "test-workflow-node-stream": "tsx tests/test-workflow-node-stream.ts",
+    "test-actual": "tsx tests/test-actual-functionality.ts",
+    "test-knowledge-base": "tsx tests/test-knowledge-base.ts",
+    "example": "tsx tests/example.ts"
   },
   "keywords": [
     "dify",
     "ai",
     "connector",
-    "api"
+    "api",
+    "knowledge-base",
+    "workflow",
+    "streaming",
+    "chatbot",
+    "typescript",
+    "nodejs"
   ],
   "author": "evanfang",
   "license": "MIT",
@@ -38,6 +62,9 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "esbuild": "^0.25.8",
+    "tslib": "^2.8.1",
+    "tsx": "^4.0.0",
     "typescript": "^5.0.0"
   },
   "engines": {

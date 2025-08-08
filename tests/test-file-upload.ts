@@ -1,7 +1,7 @@
 // 完整的文件上传功能测试
 // 实际调用uploadFile和uploadWorkflowFile函数
 
-import { uploadFile, uploadWorkflowFile } from './index';
+import { uploadFile, uploadWorkflowFile } from '../src/index';
 import * as fs from 'fs';
 
 async function testFileUploadActual() {

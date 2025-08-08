@@ -12,7 +12,9 @@ Dify API连接器是一个基于Node.js的中间层服务，旨在简化本地�
 - **配置管理**: 支持环境变量和运行时参数配置
 - **多租户支持**: 可以为不同租户使用不同的API配置
 - **向后兼容**: 完全向后兼容，现有代码无需修改
-- **知识库管理**: 完整的知识库管理功能，支持数据集、文档、段落、子块、元数据、检索和标签管理 (v1.2.0+)
+- **知识库管理**: 完整的知识库管理功能，支持数据集、文档、段落、子块、元数据、检索和标签管理
+- **Node.js流式工作流**: 支持Node.js环境下的流式工作流处理
+- **开发工具支持**: 内置tsx支持，可直接运行TypeScript测试文件
 
 ## 模块组成
 
@@ -41,7 +43,7 @@ Dify API连接器是一个基于Node.js的中间层服务，旨在简化本地�
 ## 安装
 
 ```bash
-pnpm install
+pnpm install dify-connector
 ```
 
 ## 配置
@@ -60,7 +62,7 @@ API_KEY=your-api-key-here
 除了环境变量，现在支持在运行时传入配置参数：
 
 ```typescript
-import { sendBlockingMessage, createConfig } from './dist/index.js';
+import { sendBlockingMessage, createConfig } from 'dify-connector';
 
 // 创建配置对象
 const config = createConfig({
@@ -100,7 +102,7 @@ const response2 = await sendBlockingMessage({
 ### 发送对话消息
 
 ```typescript
-import { sendBlockingMessage } from './chat';
+import { sendBlockingMessage } from 'dify-connector';
 
 const response = await sendBlockingMessage({
   query: '你好，世界！',
@@ -113,7 +115,7 @@ console.log(response.answer);
 ### 发送流式对话消息（注意：主要在浏览器环境中可用）
 
 ```typescript
-import { sendStreamingMessage } from './chat';
+import { sendStreamingMessage } from 'dify-connector';
 
 // 注意：流式处理主要设计用于浏览器环境
 await sendStreamingMessage({
@@ -131,7 +133,7 @@ await sendStreamingMessage({
 ### Node.js环境下的流式处理
 
 ```typescript
-import { sendStreamingMessageNode } from './chat';
+import { sendStreamingMessageNode } from 'dify-connector';
 
 // Node.js环境下的流式处理现已支持
 await sendStreamingMessageNode({
@@ -149,7 +151,7 @@ await sendStreamingMessageNode({
 ### 上传文件
 
 ```typescript
-import { uploadFile } from './file';
+import { uploadFile } from 'dify-connector';
 import * as fs from 'fs';
 
 const buffer = fs.readFileSync('path/to/document.pdf');
@@ -166,7 +168,7 @@ console.log('文件ID:', response.id);
 ### 执行工作流
 
 ```typescript
-import { executeBlockingWorkflow } from './workflow';
+import { executeBlockingWorkflow } from 'dify-connector';
 
 const response = await executeBlockingWorkflow({
   inputs: {
@@ -178,6 +180,26 @@ const response = await executeBlockingWorkflow({
 console.log('工作流状态:', response.data.status);
 ```
 
+### Node.js环境下的流式工作流
+
+```typescript
+import { executeStreamingWorkflowNode } from 'dify-connector';
+
+// Node.js环境下的流式工作流处理
+await executeStreamingWorkflowNode({
+  inputs: {
+    query: '处理这段文本'
+  },
+  user: 'user123'
+}, (event) => {
+  if (event.event === 'message') {
+    process.stdout.write(event.data);
+  } else if (event.event === 'workflow_finished') {
+    console.log('\n工作流完成');
+  }
+});
+```
+
 ### 知识库管理 (v1.2.0+)
 
 ```typescript
@@ -186,7 +208,7 @@ import {
   uploadDocument, 
   createSegment, 
   retrieveFromDataset 
-} from './dist/index.js';
+} from 'dify-connector';
 
 // 创建数据集
 const dataset = await createDataset({
@@ -256,7 +278,7 @@ console.log('检索结果:', results);
 所有模块都提供标准化的错误处理：
 
 ```typescript
-import { sendBlockingMessage, ChatMessageError } from './chat';
+import { sendBlockingMessage, ChatMessageError } from 'dify-connector';
 
 try {
   const response = await sendBlockingMessage({
@@ -298,6 +320,9 @@ pnpm run test-file-upload
 # 测试工作流功能
 pnpm run test-workflow
 
+# 测试Node.js流式工作流功能 (v1.3.0+)
+pnpm run test-workflow-node-stream
+
 # 测试知识库管理功能 (v1.2.0+)
 pnpm run test-knowledge-base
 
@@ -308,13 +333,30 @@ pnpm run test-all
 pnpm run test-actual
 ```
 
+### TypeScript 开发测试 (v1.3.0+)
+
+对于开发期间的快速测试，可以使用 tsx 直接运行 TypeScript 文件：
+
+```bash
+# 安装 tsx（如果尚未安装）
+pnpm add -D tsx
+
+# 运行单个测试文件
+npx tsx src/test-knowledge-base.ts
+npx tsx src/test-connector.ts
+
+# 运行类型检查
+pnpm run type-check
+```
+
 ## 依赖
 
+### 核心依赖
 - Node.js >= 20
 - TypeScript
+- Zod
 - Axios
 - @microsoft/fetch-event-source
-- Zod
 - dotenv
 - form-data
 - eventsource (用于Node.js环境下的SSE流处理)

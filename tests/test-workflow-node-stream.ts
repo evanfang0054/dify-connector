@@ -1,7 +1,7 @@
 // Node.js环境下的工作流流式处理测试
 // 基于Dify API规范的SSE流式数据格式测试
 
-import { sendStreamingWorkflowNode } from './workflow/workflow-node-stream';
+import { sendStreamingWorkflowNode } from '../src/index';
 
 async function testWorkflowNodeStream() {
   try {

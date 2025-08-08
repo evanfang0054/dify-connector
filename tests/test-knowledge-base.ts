@@ -36,7 +36,7 @@ import {
   ChildChunkError,
   MetadataError,
   KnowledgeTagError
-} from './index';
+} from '../src/index';
 
 /**
  * 测试知识库管理模块

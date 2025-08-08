@@ -7,7 +7,7 @@ import {
   uploadFile,
   sendBlockingMessage,
   executeBlockingWorkflow
-} from './index';
+} from '../src/index';
 
 async function testConnectorActual() {
   try {

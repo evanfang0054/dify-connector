@@ -5,7 +5,7 @@ import {
   executeBlockingWorkflow,
   createConfig,
   getOrCreateConfig 
-} from './index';
+} from '../src/index';
 
 // 测试 1: 使用参数配置
 const customConfig = {

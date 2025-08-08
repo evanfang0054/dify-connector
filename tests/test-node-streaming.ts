@@ -1,6 +1,6 @@
 // 测试Node.js环境下的流式处理功能
 
-import { sendStreamingMessageNode } from './index';
+import { sendStreamingMessageNode } from '../src/index';
 
 async function testNodeStreaming() {
   try {

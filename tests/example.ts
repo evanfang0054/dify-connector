@@ -12,7 +12,7 @@ import {
   uploadWorkflowFile,
   executeBlockingWorkflow,
   executeStreamingWorkflow
-} from './index';
+} from '../src/index';
 import * as fs from 'fs';
 
 async function example() {

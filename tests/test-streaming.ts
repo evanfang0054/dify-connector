@@ -1,7 +1,7 @@
 // 流式消息测试文件
 // 用于测试sendStreamingMessage功能
 
-import { sendStreamingMessage } from './index';
+import { sendStreamingMessage } from '../src/index';
 
 async function testStreamingMessage() {
   try {

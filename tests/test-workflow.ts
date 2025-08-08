@@ -1,7 +1,7 @@
 // 完整的工作流功能测试
 // 实际调用executeBlockingWorkflow和executeStreamingWorkflow函数
 
-import { executeBlockingWorkflow, executeStreamingWorkflow } from './index';
+import { executeBlockingWorkflow, executeStreamingWorkflow } from '../src/index';
 
 async function testWorkflowActual() {
   try {

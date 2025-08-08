@@ -20,7 +20,7 @@ export { sendMessage, sendBlockingMessage, sendStreamingMessage, sendStreamingMe
 export type { ChatRequest, ChatResponse, ChatStreamEvent } from './chat';
 
 // 工作流执行模块
-export { executeWorkflow, executeBlockingWorkflow, executeStreamingWorkflow } from './workflow';
+export { executeWorkflow, executeBlockingWorkflow, executeStreamingWorkflow, sendStreamingWorkflowNode } from './workflow';
 export type { WorkflowRequest, WorkflowResponse, WorkflowStreamEvent } from './workflow';
 
 // 知识库管理模块
